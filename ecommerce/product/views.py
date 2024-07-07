@@ -9,8 +9,8 @@ class CategoryViewSet(viewsets.ViewSet):
     """
     A simple viewset for viewing all categories
     """
+    queryset = Category.objects.all()
     def list(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(instance=categories, many=True)
+        serializer = CategorySerializer(instance=self.queryset, many=True)
         return Response(data=serializer.data)
 

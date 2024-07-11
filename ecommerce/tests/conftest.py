@@ -1,7 +1,12 @@
+import pytest
 from pytest_factoryboy import register
 from .factories import CategoryFactory, BrandFactory, ProductFactory
+from rest_framework.test import APIClient
 
 register(CategoryFactory)
 register(BrandFactory)
 register(ProductFactory)
-"""INTRODUCE ALL FACTORIES"""
+
+@pytest.fixture
+def api_client():
+    return APIClient

@@ -1,21 +1,19 @@
 import factory
 from ecommerce.product.models import Category, Brand, Product
 
-"""FOR EVERY MODEL WE CREATE IT"""
-
 
 class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Category
 
-    name = "test_category"
+    name = factory.sequence(lambda n:f'Category_{n}')
 
 
 class BrandFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Brand
 
-    name = "test_brond"
+    name = factory.sequence(lambda n:f'brand-{n}')
 
 
 class ProductFactory(factory.django.DjangoModelFactory):
@@ -25,4 +23,3 @@ class ProductFactory(factory.django.DjangoModelFactory):
     name = "test_product"
     brand = factory.SubFactory(BrandFactory)
     category = factory.SubFactory(CategoryFactory)
-    """BECAUSE OF RELATION WITH OTHER TABLE"""

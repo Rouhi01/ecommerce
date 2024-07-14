@@ -12,9 +12,16 @@ class CategoryAdmin(admin.ModelAdmin):
     pass
 
 
+class ProductLineInline(admin.TabularInline):
+    model = ProductLine
+    extra = 1
+    can_delete = True
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {'slug':['name']}
+    inlines = [ProductLineInline]
 
 
 @admin.register(ProductLine)

@@ -35,6 +35,11 @@ class ProductViewSet(viewsets.ViewSet):
     A simple viewSet for viewing all products
     """
     queryset = Product.objects.all()
+    lookup_field = 'slug'
+
+    def retrieve(self, request, slug=None):
+        serializer = ProductSerializer(self.queryset.get(slug=slug), many=False)
+        return Response(serializer.data)
 
     @extend_schema(responses=ProductSerializer)
     def list(self, request):

@@ -4,6 +4,12 @@ from rest_framework.response import Response
 from .models import Category, Brand, Product
 from .serializers import CategorySerializer, BrandSerializer, ProductSerializer
 from drf_spectacular.utils import extend_schema
+from django.db import connection
+
+from pygments import highlight
+from pygments.formatters import TerminalFormatter
+from pygments.lexers import SqlLexer
+from sqlparse import format
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -38,8 +44,12 @@ class ProductViewSet(viewsets.ViewSet):
     lookup_field = 'slug'
 
     def retrieve(self, request, slug=None):
-        serializer = ProductSerializer(self.queryset.get(slug=slug), many=False)
-        return Response(serializer.data)
+        serializer = ProductSerializer(
+            self.queryset.filter(slug=slug).select_related("category", "brand"),
+            many=False
+        )
+        data = Response(serializer.data)
+        return data
 
     @extend_schema(responses=ProductSerializer)
     def list(self, request):

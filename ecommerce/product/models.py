@@ -1,6 +1,9 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-from .managers import ActiveManager, ActiveQueryset
+from .managers import ActiveQueryset
+from django.core.exceptions import ValidationError
+
+from .custom_fields import OrderField
 
 
 class Category(MPTTModel):
@@ -52,6 +55,20 @@ class ProductLine(models.Model):
     stock_qty = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_lines')
     is_active = models.BooleanField(default=False)
+    order = OrderField(blank=True, unique_for_field="product")
 
     objects = ActiveQueryset.as_manager()
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude=exclude)
+        product_lines = ProductLine.objects.filter(product=self.product)
+        for product_line in product_lines:
+            if self.id != product_line.id and self.order == product_line.order:
+                raise ValidationError("Duplicate value.")
+
+    def __str__(self):
+        return str(self.order)
+
+
+
 

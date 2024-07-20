@@ -10,6 +10,7 @@ class Category(MPTTModel):
     name = models.CharField(max_length=100, unique=True)
     parent = TreeForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
     is_active = models.BooleanField(default=False)
+    slug = models.SlugField(max_length=255)
 
     objects = ActiveQueryset.as_manager()
 
@@ -27,6 +28,7 @@ class Category(MPTTModel):
 class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=False)
+    slug = models.SlugField(max_length=255)
 
     objects = ActiveQueryset.as_manager()
 
@@ -59,15 +61,14 @@ class ProductLine(models.Model):
 
     objects = ActiveQueryset.as_manager()
 
-    def clean_fields(self, exclude=None):
-        super().clean_fields(exclude=exclude)
+    def clean(self):
         product_lines = ProductLine.objects.filter(product=self.product)
         for product_line in product_lines:
             if self.id != product_line.id and self.order == product_line.order:
                 raise ValidationError("Duplicate value.")
 
     def __str__(self):
-        return str(self.order)
+        return str(self.sku)
 
 
 
